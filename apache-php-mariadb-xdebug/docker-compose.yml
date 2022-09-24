@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    environment:
+      - ALLOW_OVERRIDE=true
+    ports:
+      - "80:80"
+    links:
+      - db
+    volumes:
+      - ./core:/var/www/html
+
+  db:
+    image: mariadb
+    restart: always
+    volumes:
+      - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: test
+      MYSQL_DATABASE: database
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+        - '8080:80'
+    restart: always
+    environment:
+        PMA_HOST: db
+        UPLOAD_LIMIT: 64M
+    depends_on:
+        - db    
